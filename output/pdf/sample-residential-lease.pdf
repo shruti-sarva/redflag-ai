@@ -1,0 +1,75 @@
+%PDF-1.3
+%‚„œ”
+1 0 obj
+<<
+/Type /Catalog
+/Pages 2 0 R
+>>
+endobj
+2 0 obj
+<<
+/Type /Pages
+/Count 1
+/Kids [ 3 0 R ]
+>>
+endobj
+3 0 obj
+<<
+/Type /Page
+/Resources <<
+/Font <<
+/F1 <<
+/Type /Font
+/Subtype /Type1
+/BaseFont /Helvetica
+>>
+>>
+>>
+/MediaBox [ 0.0 0.0 595 842 ]
+/Parent 2 0 R
+/Contents 4 0 R
+>>
+endobj
+4 0 obj
+<<
+/Length 992
+>>
+stream
+q 1 g 0 0 595 842 re f Q
+BT /F1 23 Tf 52 780 Td (Sample Residential Lease) Tj ET
+BT /F1 11 Tf 52 750 Td (Fictional contract for scanner testing) Tj ET
+BT /F1 12 Tf 52 700 Td (1. Rent and term) Tj ET
+BT /F1 11 Tf 52 678 Td (The tenant pays AUD 500 per week for a fixed term of 12 months.) Tj ET
+BT /F1 12 Tf 52 634 Td (2. Property access) Tj ET
+BT /F1 11 Tf 52 612 Td (The landlord may enter the property at any time without notice.) Tj ET
+BT /F1 12 Tf 52 568 Td (3. Early termination) Tj ET
+BT /F1 11 Tf 52 546 Td (If the tenant ends the lease early, six weeks of rent is payable immediately.) Tj ET
+BT /F1 11 Tf 52 528 Td (The fee still applies if a replacement tenant has already moved in.) Tj ET
+BT /F1 12 Tf 52 484 Td (4. Changes to rent) Tj ET
+BT /F1 11 Tf 52 462 Td (The landlord may increase rent at any time during the fixed term.) Tj ET
+BT /F1 12 Tf 52 418 Td (5. Urgent repairs) Tj ET
+BT /F1 11 Tf 52 396 Td (The landlord will provide an emergency contact for urgent repairs.) Tj ET
+endstream
+endobj
+5 0 obj
+<<
+/Producer (pypdf)
+>>
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000123 00000 n 
+0000000304 00000 n 
+0000001347 00000 n 
+trailer
+<<
+/Size 6
+/Root 1 0 R
+/Info 5 0 R
+>>
+startxref
+1386
+%%EOF
