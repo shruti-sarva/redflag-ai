@@ -1,7 +1,6 @@
 """Request a structured Gemini review."""
 
 import os
-import time
 from typing import Literal
 
 import streamlit as st
@@ -68,22 +67,17 @@ def analyze_contract(
         response_schema=ContractReport,
         temperature=0.25,
     )
-    with genai.Client(api_key=api_key) as client:
-        for model in ("gemini-3.8-flash", "gemini-3.6-flash"):
-            for attempt in range(2):
-                try:
-                    response = client.models.generate_content(
-                        model=model, contents=prompt, config=config
-                    )
-                except errors.APIError as error:
-                    if error.code not in (429, 503):
-                        raise
-                    if attempt == 0:
-                        time.sleep(1.5)
-                    continue
+    http_options = types.HttpOptions(retry_options=types.HttpRetryOptions(attempts=1))
+    with genai.Client(api_key=api_key, http_options=http_options) as client:
+        try:
+            response = client.models.generate_content(
+                model="gemini-3.6-flash", contents=prompt, config=config
+            )
+        except errors.APIError as error:
+            if error.code in (429, 503):
+                raise RuntimeError("Gemini is temporarily busy. Try again shortly.") from error
+            raise
 
-                if not response.text:
-                    raise ValueError("Gemini returned an empty contract review.")
-                return ContractReport.model_validate_json(response.text)
-
-    raise RuntimeError("Gemini is temporarily busy. Try again shortly.")
+    if not response.text:
+        raise ValueError("Gemini returned an empty contract review.")
+    return ContractReport.model_validate_json(response.text)

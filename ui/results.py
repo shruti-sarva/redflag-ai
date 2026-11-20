@@ -9,7 +9,7 @@ def as_dict(value):
     return value if isinstance(value, dict) else {}
 
 
-def render_results(analysis):
+def render_results(analysis, *, document_name: str, contract_text: str):
     data = as_dict(analysis)
 
     findings = data.get("flags", data.get("red_flags", []))
@@ -21,16 +21,30 @@ def render_results(analysis):
         for f in findings
     )
 
-    st.markdown("## Contract analysis")
+    st.header("Contract review")
+    st.text(document_name)
+    if data.get("verdict_headline"):
+        st.write(data["verdict_headline"])
 
-    col1, col2, col3 = st.columns(3)
-
-    col1.metric("High risk", counts["high"])
-    col2.metric("Medium risk", counts["medium"])
-    col3.metric("Low risk", counts["low"])
+    score_col, high_col, medium_col = st.columns(3)
+    score = data.get("risk_score")
+    score_col.metric("Risk score", f"{score}/100" if score is not None else "—")
+    high_col.metric("High risk", counts["high"])
+    medium_col.metric("Medium risk", counts["medium"])
 
     st.divider()
 
+    document, findings_panel = st.columns(2)
+    with document:
+        st.subheader("Original contract")
+        with st.container(height=480, border=True):
+            st.text(contract_text, wrap=True)
+
+    with findings_panel:
+        render_findings(findings)
+
+
+def render_findings(findings):
     st.markdown("### Flagged clauses")
 
     if not findings:
