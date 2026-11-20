@@ -92,7 +92,6 @@ def extract_text_from_pdf(uploaded_file) -> str:
     pages = [page.extract_text() or "" for page in reader.pages]
     return "\n".join(pages).strip()
 
-def analyze_contract(text: str, jurisdiction: str) -> ContractReport:
     api_key = os.environ.get("GEMINI_API_KEY") or st.secrets.get("GEMINI_API_KEY", None)
     if not api_key:
         raise ValueError("Missing GEMINI_API_KEY. Set it in your environment or Streamlit secrets.")
@@ -117,6 +116,46 @@ def analyze_contract(text: str, jurisdiction: str) -> ContractReport:
         ),
     )
     return ContractReport.model_validate_json(response.text)
+
+def analyze_contract(text: str, jurisdiction: str) -> ContractReport:
+    api_key = os.environ.get("GEMINI_API_KEY") or st.secrets.get("GEMINI_API_KEY", None)
+    if not api_key:
+        raise ValueError("Missing GEMINI_API_KEY. Set it in your environment or Streamlit secrets.")
+
+    client = genai.Client(api_key=api_key)
+    prompt = f"""
+    You are an uncompromising consumer, tenant, and freelancer advocate reviewing a contract under {jurisdiction} norms.
+    Analyze the contract below for hidden traps, one-sided liabilities, unlawful fees, IP grabs, or predatory clauses.
+    Be sharp, practical, and easy to screenshot. Note: frame findings as educational risk flags, not formal legal representation.
+
+    CONTRACT TEXT:
+    {text[:25000]}
+    """
+
+    models_to_try = ["gemini-3.8-flash", "gemini-3.8-flash-lite", "gemini-3.8-pro"]
+    last_error = None
+
+    for model_name in models_to_try:
+        for attempt in range(2):
+            try:
+                response = client.models.generate_content(
+                    model=model_name,
+                    contents=prompt,
+                    config=types.GenerateContentConfig(
+                        response_mime_type="application/json",
+                        response_schema=ContractReport,
+                        temperature=0.2,
+                    ),
+                )
+                return ContractReport.model_validate_json(response.text)
+            except Exception as e:
+                last_error = e
+                if "503" in str(e) or "UNAVAILABLE" in str(e) or "429" in str(e):
+                    time.sleep(1.5 * (attempt + 1))
+                    continue
+                raise e
+
+    raise RuntimeError("AI servers are momentarily busy. Please wait 5 seconds and click Scan again.") from last_error
 
 # --- 6. MAIN UI ---
 st.title("🚩 RedFlag.ai")
