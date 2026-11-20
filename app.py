@@ -8,7 +8,7 @@ from typing import List, Literal
 from google import genai
 from google.genai import types
 
-# --- 1. PAGE CONFIG & PREMIUM DARK SAAS STYLING ---
+# --- 1. PAGE CONFIG & HIGH-CRAFT SAAS STYLING ---
 st.set_page_config(
     page_title="RedFlag.ai | Contract & Lease Risk Scanner",
     page_icon="🚩",
@@ -20,116 +20,154 @@ st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 
-    /* Global Canvas & Typography */
     html, body, [class*="css"], .stApp {
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-        background-color: #090d16;
-        color: #f1f5f9;
+        background: radial-gradient(ellipse 80% 45% at 50% -10%, rgba(239, 68, 68, 0.16), transparent),
+                    #070b14;
+        color: #f8fafc;
     }
 
-    /* Hide default Streamlit header/footer clutter */
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {background-color: transparent !important;}
+    #MainMenu, footer {visibility: hidden;}
+    header {background: transparent !important;}
 
     .block-container {
-        padding-top: 2rem;
-        padding-bottom: 3rem;
-        max-width: 780px;
+        padding-top: 2.2rem;
+        padding-bottom: 3.5rem;
+        max-width: 720px;
     }
 
     /* Hero Header */
     .hero-wrap {
         text-align: center;
-        padding: 12px 0 24px 0;
+        margin-bottom: 26px;
     }
-    .hero-badge {
-        display: inline-block;
-        background: rgba(239, 68, 68, 0.12);
-        border: 1px solid rgba(239, 68, 68, 0.35);
-        color: #fca5a5;
-        font-size: 0.75rem;
+    .hero-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.28);
+        color: #fda4af;
+        font-size: 0.72rem;
         font-weight: 600;
         letter-spacing: 0.08em;
         text-transform: uppercase;
         padding: 5px 14px;
         border-radius: 999px;
-        margin-bottom: 12px;
+        margin-bottom: 14px;
     }
     .hero-title {
-        font-size: 2.5rem;
+        font-size: 2.75rem;
         font-weight: 800;
-        letter-spacing: -0.03em;
+        letter-spacing: -0.035em;
         margin: 0;
-        background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+        line-height: 1.1;
+    }
+    .hero-title-text {
+        background: linear-gradient(180deg, #ffffff 20%, #94a3b8 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
     }
     .hero-sub {
         color: #94a3b8;
-        font-size: 1rem;
-        margin-top: 8px;
+        font-size: 1.02rem;
+        max-width: 540px;
+        margin: 10px auto 0 auto;
+        line-height: 1.5;
     }
 
-    /* Dark Glass Inputs & Controls */
-    .stSelectbox > div > div,
-    .stTextArea > div > div > textarea,
-    .stTextInput > div > div > input {
-        background-color: #111827 !important;
-        color: #f8fafc !important;
+    /* Main Studio Card Container */
+    [data-testid="stVerticalBlockBorderWrapper"] {
+        background: rgba(15, 23, 42, 0.72) !important;
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(148, 163, 184, 0.14) !important;
+        border-radius: 20px !important;
+        padding: 18px 20px 22px 20px !important;
+        box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.6);
+    }
+
+    /* Sample Quick-Load Pills (Secondary Buttons) */
+    .stButton > button[kind="secondary"] {
+        background: #111827 !important;
+        color: #cbd5e1 !important;
         border: 1px solid #1e293b !important;
         border-radius: 10px !important;
+        font-size: 0.82rem !important;
+        font-weight: 500 !important;
+        padding: 0.45rem 0.75rem !important;
+        transition: all 0.15s ease;
     }
-    .stSelectbox > div > div:hover,
-    .stTextArea > div > div > textarea:focus {
+    .stButton > button[kind="secondary"]:hover {
+        border-color: rgba(239, 68, 68, 0.5) !important;
+        color: #ffffff !important;
+        background: rgba(239, 68, 68, 0.08) !important;
+    }
+
+    /* Fix File Uploader Dropzone Color */
+    [data-testid="stFileUploaderDropzone"] {
+        background-color: #090e1a !important;
+        border: 1px dashed #293548 !important;
+        border-radius: 12px !important;
+        padding: 12px 16px !important;
+    }
+    [data-testid="stFileUploaderDropzone"]:hover {
         border-color: #ef4444 !important;
-        box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.3) !important;
     }
 
-    /* File Uploader */
-    [data-testid="stFileUploader"] {
-        background-color: #0f172a;
-        border: 1px dashed #334155;
-        border-radius: 12px;
-        padding: 10px;
+    /* Fix Textarea & Selectbox Backgrounds */
+    textarea, [data-baseweb="select"] > div {
+        background-color: #090e1a !important;
+        border-color: #1e293b !important;
+        color: #f8fafc !important;
+        border-radius: 12px !important;
+    }
+    textarea:focus {
+        border-color: #ef4444 !important;
+        box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.35) !important;
     }
 
-    /* Primary CTA Button */
+    /* Primary Scan Button */
     .stButton > button[kind="primary"] {
-        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
-        color: white !important;
-        border: none !important;
+        background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%) !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(255, 255, 255, 0.12) !important;
         border-radius: 12px !important;
         padding: 0.75rem 1.5rem !important;
         font-weight: 700 !important;
-        font-size: 1rem !important;
-        letter-spacing: 0.01em;
-        box-shadow: 0 8px 24px rgba(239, 68, 68, 0.28);
+        font-size: 0.98rem !important;
+        box-shadow: 0 10px 25px -5px rgba(239, 68, 68, 0.45);
         transition: all 0.2s ease;
     }
     .stButton > button[kind="primary"]:hover {
         transform: translateY(-1px);
-        box-shadow: 0 12px 28px rgba(239, 68, 68, 0.4);
+        box-shadow: 0 14px 30px -5px rgba(239, 68, 68, 0.6);
     }
 
-    /* Scorecard Container */
+    .trust-strip {
+        text-align: center;
+        color: #64748b;
+        font-size: 0.76rem;
+        margin-top: 10px;
+    }
+
+    /* Scorecard Result Card */
     .score-card {
-        background: radial-gradient(circle at top right, rgba(239, 68, 68, 0.14), transparent 55%),
-                    linear-gradient(180deg, #111827 0%, #0b1120 100%);
-        border: 1px solid #1e293b;
+        background: radial-gradient(circle at top right, rgba(239, 68, 68, 0.15), transparent 55%),
+                    #0f172a;
+        border: 1px solid rgba(148, 163, 184, 0.16);
         border-radius: 20px;
-        padding: 26px;
-        margin: 18px 0 22px 0;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+        padding: 24px;
+        margin: 22px 0;
         display: flex;
         align-items: center;
-        gap: 24px;
+        gap: 22px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
     }
     .pill-meta {
         display: inline-block;
-        background: #1e293b;
+        background: rgba(30, 41, 59, 0.9);
         color: #cbd5e1;
-        font-size: 0.72rem;
+        font-size: 0.7rem;
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.08em;
@@ -140,31 +178,31 @@ st.markdown("""
 
     /* Flag Cards */
     .flag-card {
-        background: #111827;
+        background: #0f172a;
         border: 1px solid #1e293b;
         border-radius: 14px;
         padding: 18px 20px;
-        margin-bottom: 14px;
+        margin-bottom: 12px;
     }
     .flag-high { border-left: 4px solid #ef4444; }
     .flag-medium { border-left: 4px solid #f59e0b; }
     .flag-green { border-left: 4px solid #10b981; background: rgba(16, 185, 129, 0.06); }
 
     .badge-high {
-        background: rgba(239, 68, 68, 0.15);
+        background: rgba(239, 68, 68, 0.14);
         color: #fca5a5;
-        border: 1px solid rgba(239, 68, 68, 0.35);
-        font-size: 0.7rem;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        font-size: 0.68rem;
         font-weight: 700;
         padding: 3px 9px;
         border-radius: 999px;
         float: right;
     }
     .badge-medium {
-        background: rgba(245, 158, 11, 0.15);
+        background: rgba(245, 158, 11, 0.14);
         color: #fcd34d;
-        border: 1px solid rgba(245, 158, 11, 0.35);
-        font-size: 0.7rem;
+        border: 1px solid rgba(245, 158, 11, 0.3);
+        font-size: 0.68rem;
         font-weight: 700;
         padding: 3px 9px;
         border-radius: 999px;
@@ -172,37 +210,14 @@ st.markdown("""
     }
     .quote-box {
         font-family: 'JetBrains Mono', monospace;
-        font-size: 0.8rem;
+        font-size: 0.78rem;
         color: #94a3b8;
-        background: #090d16;
+        background: #070b14;
         border: 1px solid #1e293b;
         padding: 10px 12px;
         border-radius: 8px;
         margin: 10px 0;
         line-height: 1.5;
-    }
-    .takeaway-text {
-        color: #e2e8f0;
-        font-size: 0.92rem;
-        line-height: 1.55;
-    }
-
-    /* Tabs Styling */
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 8px;
-        background-color: #111827;
-        padding: 6px;
-        border-radius: 12px;
-        border: 1px solid #1e293b;
-    }
-    .stTabs [data-baseweb="tab"] {
-        border-radius: 8px;
-        color: #94a3b8;
-        font-weight: 600;
-    }
-    .stTabs [aria-selected="true"] {
-        background-color: #1e293b !important;
-        color: #ffffff !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -231,19 +246,24 @@ if "unlocked_pro" not in st.session_state:
     st.session_state.unlocked_pro = False
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
+if "draft_contract" not in st.session_state:
+    st.session_state.draft_contract = ""
 
 MAX_FREE_SCANS = 5
 
-# --- 4. SAMPLE DATA ---
+# --- 4. SAMPLE CONTRACTS ---
 SAMPLES = {
-    "Shady Rental Lease": """RESIDENTIAL TENANCY SPECIAL CONDITIONS:
+    "lease": """RESIDENTIAL TENANCY SPECIAL CONDITIONS:
 14.2 Tenant agrees to pay a non-refundable $450 'End of Lease Air-Con & Blind Sanitization Fee' deducted automatically from the bond regardless of property condition.
 18.5 Landlord or agents may enter the premises at any time without prior written notice to conduct marketing inspections or photography.
 22.1 Should Tenant break the lease early, Tenant forfeits the entire security deposit plus 3 months of future rent as liquidated damages.""",
-    "Trap Freelance Contract": """INDEPENDENT CONTRACTOR AGREEMENT:
+    "freelance": """INDEPENDENT CONTRACTOR AGREEMENT:
 7.1 Intellectual Property: All work product, including pre-existing code libraries, tools, and drafts created before or during this engagement, shall belong exclusively to Client in perpetuity.
 9.4 Payment Terms: Invoices are payable Net-90 days AFTER Client receives final payment from its own end-customer.
-11.2 Non-Compete: Contractor shall not provide software or AI consulting services to any business globally for 24 months post-termination."""
+11.2 Non-Compete: Contractor shall not provide software or AI consulting services to any business globally for 24 months post-termination.""",
+    "job": """EXECUTIVE EMPLOYMENT OFFER:
+6.3 Side Projects: Any software, invention, or creative work conceived by Employee at any time during employment—including evenings, weekends, and on personal devices—shall automatically vest in the Company.
+10.1 Probation & Notice: Company may terminate Employee immediately without notice or severance during the first 12 months, while Employee must provide 90 days written notice to resign."""
 }
 
 # --- 5. GEMINI CLIENT WITH RETRY & FALLBACK ---
@@ -282,7 +302,7 @@ def analyze_contract(text: str, jurisdiction: str, lens: str) -> ContractReport:
     lens_instructions = {
         "Strict Advocate": "Be thorough and uncompromising. Flag every subtle trap, one-sided liability, or deviation from statutory protections.",
         "Balanced Review": "Focus only on major financial, legal, or IP risks that genuinely matter in real-world negotiations.",
-        "Brutal Roast Mode": "Use sharp, witty, brutally honest commentary in the plain_english explanations while keeping quotes and redlines accurate."
+        "Brutal Roast": "Use sharp, witty, brutally honest commentary in the plain_english explanations while keeping quotes and redlines accurate."
     }
 
     prompt = f"""
@@ -299,7 +319,7 @@ def analyze_contract(text: str, jurisdiction: str, lens: str) -> ContractReport:
         config=types.GenerateContentConfig(
             response_mime_type="application/json",
             response_schema=ContractReport,
-            temperature=0.25 if lens != "Brutal Roast Mode" else 0.6,
+            temperature=0.25 if lens != "Brutal Roast" else 0.6,
         ),
     )
     return ContractReport.model_validate_json(response.text)
@@ -309,7 +329,7 @@ def render_svg_gauge(score: int, color: str) -> str:
     circumference = 2 * 3.14159 * radius
     offset = circumference - (score / 100) * circumference
     return f"""
-    <svg width="112" height="112" viewBox="0 0 112 112" style="flex-shrink:0;">
+    <svg width="108" height="108" viewBox="0 0 112 112" style="flex-shrink:0;">
         <circle cx="56" cy="56" r="{radius}" fill="none" stroke="#1e293b" stroke-width="10" />
         <circle cx="56" cy="56" r="{radius}" fill="none" stroke="{color}" stroke-width="10"
                 stroke-dasharray="{circumference:.1f}" stroke-dashoffset="{offset:.1f}"
@@ -334,39 +354,57 @@ def build_markdown_report(report: ContractReport) -> str:
     lines.append(report.polite_email)
     return "\n".join(lines)
 
-# --- 6. HERO HEADER & CONTROLS ---
+# --- 6. HERO HEADER ---
 st.markdown("""
 <div class="hero-wrap">
-    <div class="hero-badge">AI Contract & Lease Shield</div>
-    <h1 class="hero-title">🚩 RedFlag.ai</h1>
-    <p class="hero-sub">Spot predatory clauses, generate fair redlines, and interrogate any contract in 10 seconds.</p>
+    <div class="hero-pill">⚡ Instant Contract & Lease Shield</div>
+    <h1 class="hero-title">🚩 <span class="hero-title-text">RedFlag.ai</span></h1>
+    <p class="hero-sub">Drop a lease, job offer, or freelance contract to uncover hidden traps and generate ready-to-send pushback redlines.</p>
 </div>
 """, unsafe_allow_html=True)
 
-col1, col2, col3 = st.columns([2, 1.3, 1.3])
-with col1:
-    sample_choice = st.selectbox("Sample or Custom:", ["Custom Input", "Shady Rental Lease", "Trap Freelance Contract"])
-with col2:
-    jurisdiction = st.selectbox("Region:", ["Australia (VIC/NSW)", "United States", "United Kingdom", "Global / Remote"])
-with col3:
-    lens = st.selectbox("Scanner Lens:", ["Strict Advocate", "Balanced Review", "Brutal Roast Mode"])
+# --- 7. GLASS SCANNER STUDIO CARD ---
+with st.container(border=True):
+    st.caption("TRY A 1-CLICK SAMPLE:")
+    s1, s2, s3 = st.columns(3)
+    if s1.button("🏠 Shady Rental Lease", use_container_width=True):
+        st.session_state.draft_contract = SAMPLES["lease"]
+    if s2.button("💻 Trap Freelance Gig", use_container_width=True):
+        st.session_state.draft_contract = SAMPLES["freelance"]
+    if s3.button("💼 Sneaky Job Offer", use_container_width=True):
+        st.session_state.draft_contract = SAMPLES["job"]
 
-uploaded_pdf = st.file_uploader("Upload Contract PDF (optional)", type=["pdf"])
+    uploaded_pdf = st.file_uploader("Upload PDF contract", type=["pdf"], label_visibility="collapsed")
+    if uploaded_pdf is not None:
+        st.session_state.draft_contract = extract_text_from_pdf(uploaded_pdf)
+        st.caption(f"✅ Extracted `{uploaded_pdf.name}` ({len(st.session_state.draft_contract):,} characters)")
 
-default_text = SAMPLES.get(sample_choice, "")
-if uploaded_pdf is not None:
-    default_text = extract_text_from_pdf(uploaded_pdf)
-    st.caption(f"✅ Loaded `{uploaded_pdf.name}` ({len(default_text):,} characters)")
+    contract_text = st.text_area(
+        "Contract text",
+        value=st.session_state.draft_contract,
+        height=155,
+        placeholder="Paste clauses here or upload a PDF above...",
+        label_visibility="collapsed",
+    )
+    st.session_state.draft_contract = contract_text
 
-contract_text = st.text_area("Or paste contract text:", value=default_text, height=160, placeholder="Paste lease clauses, NDA, or job offer...")
+    c_reg, c_lens = st.columns([1.1, 1.5])
+    with c_reg:
+        jurisdiction = st.selectbox("Jurisdiction", ["Australia (VIC/NSW)", "United States", "United Kingdom", "Global / Remote"])
+    with c_lens:
+        lens = st.selectbox("Audit Tone", ["Strict Advocate", "Balanced Review", "Brutal Roast"])
 
-if st.button("🔍 Scan for Red Flags", type="primary", use_container_width=True):
+    scan_clicked = st.button("Scan Contract for Red Flags →", type="primary", use_container_width=True)
+
+st.markdown('<div class="trust-strip">🔒 Zero documents stored • Educational risk audit • Instant redlines</div>', unsafe_allow_html=True)
+
+if scan_clicked:
     if not contract_text.strip():
-        st.warning("Please paste contract text or upload a PDF first.")
+        st.warning("Pick one of the sample pills above, upload a PDF, or paste text to scan.")
     elif st.session_state.scan_count >= MAX_FREE_SCANS:
         st.error("You've reached the free scan limit for this session.")
     else:
-        with st.spinner(f"Running {lens} audit..."):
+        with st.spinner(f"Auditing clauses ({lens})..."):
             try:
                 report = analyze_contract(contract_text, jurisdiction, lens)
                 st.session_state.scan_count += 1
@@ -376,7 +414,7 @@ if st.button("🔍 Scan for Red Flags", type="primary", use_container_width=True
             except Exception as e:
                 st.error(f"Scan error: {e}")
 
-# --- 7. RENDER INTERACTIVE SCORECARD ---
+# --- 8. RENDER INTERACTIVE SCORECARD ---
 if "last_report" in st.session_state:
     report: ContractReport = st.session_state.last_report
     score_color = "#ef4444" if report.risk_score >= 70 else ("#f59e0b" if report.risk_score >= 40 else "#10b981")
@@ -387,11 +425,11 @@ if "last_report" in st.session_state:
         {gauge_svg}
         <div>
             <div class="pill-meta">{html.escape(report.contract_type)} • {html.escape(lens)}</div>
-            <div style="font-size: 1.35rem; font-weight: 800; color: #f8fafc; line-height: 1.3; margin-bottom: 6px;">
+            <div style="font-size: 1.32rem; font-weight: 800; color: #f8fafc; line-height: 1.3; margin-bottom: 6px;">
                 {html.escape(report.verdict_headline)}
             </div>
-            <div style="font-size: 0.9rem; color: #94a3b8;">
-                Detected <b style="color:#f8fafc;">{len(report.flags)} red flag(s)</b> and <b style="color:#34d399;">{len(report.green_flags)} fair term(s)</b>.
+            <div style="font-size: 0.88rem; color: #94a3b8;">
+                Caught <b style="color:#f8fafc;">{len(report.flags)} red flag(s)</b> and <b style="color:#34d399;">{len(report.green_flags)} fair term(s)</b>.
             </div>
         </div>
     </div>
@@ -399,7 +437,6 @@ if "last_report" in st.session_state:
 
     tab_flags, tab_negotiate, tab_chat = st.tabs(["🚩 Clause Breakdown", "✉️ Redlines & Email", "💬 Ask Contract"])
 
-    # TAB 1: FLAGS
     with tab_flags:
         for idx, flag in enumerate(report.flags, 1):
             card_cls = "flag-high" if flag.severity == "HIGH" else "flag-medium"
@@ -408,9 +445,9 @@ if "last_report" in st.session_state:
             st.markdown(f"""
             <div class="flag-card {card_cls}">
                 <span class="{badge_cls}">{badge_txt}</span>
-                <div style="font-weight: 700; font-size: 1.02rem; color: #f8fafc;">{idx}. {html.escape(flag.title)}</div>
+                <div style="font-weight: 700; font-size: 1rem; color: #f8fafc;">{idx}. {html.escape(flag.title)}</div>
                 <div class="quote-box">"{html.escape(flag.exact_quote)}"</div>
-                <div class="takeaway-text">{html.escape(flag.plain_english)}</div>
+                <div style="color:#cbd5e1; font-size:0.9rem; line-height:1.55;">{html.escape(flag.plain_english)}</div>
             </div>
             """, unsafe_allow_html=True)
 
@@ -419,7 +456,6 @@ if "last_report" in st.session_state:
             for gf in report.green_flags:
                 st.markdown(f'<div class="flag-card flag-green" style="padding:12px 16px; color:#a7f3d0;">✓ {html.escape(gf)}</div>', unsafe_allow_html=True)
 
-    # TAB 2: REDLINES & NEGOTIATION EMAIL
     with tab_negotiate:
         if not st.session_state.unlocked_pro:
             st.info("🔒 **Pro Toolkit ($5 One-Time):** Unlock copy-paste replacement clauses (redlines), tone-adjustable pushback emails, and full Markdown report export.")
@@ -446,7 +482,6 @@ if "last_report" in st.session_state:
                 use_container_width=True,
             )
 
-    # TAB 3: INTERACTIVE Q&A WITH THE CONTRACT
     with tab_chat:
         st.caption("Ask any specific question grounded in this document (e.g., *'Can I keep a pet?'*, *'What is the notice period?'*).")
         for msg in st.session_state.chat_history:
@@ -474,7 +509,6 @@ if "last_report" in st.session_state:
                     st.markdown(ans)
                     st.session_state.chat_history.append({"role": "assistant", "content": ans})
 
-    # --- VIRAL SHARE BLOCK ---
     st.divider()
     share_summary = f"🚩 RedFlag.ai ({lens}) scanned my {report.contract_type}: {report.risk_score}/100 Risk Score — \"{report.verdict_headline}\" ({len(report.flags)} traps caught before signing)."
     st.caption("📋 Copy & share your scorecard:")
